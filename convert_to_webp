@@ -1,0 +1,25 @@
+# this is a shell file to convert any images in a folder into webp format
+
+#!/bin/bash
+
+# Define the directories
+INPUT_DIR="/path/to/Uploads"
+OUTPUT_DIR="$INPUT_DIR/webp"
+
+# Create the output directory if it does not exist
+mkdir -p "$OUTPUT_DIR"
+
+# Find files modified in the last 3 hours
+find "$INPUT_DIR" -type f -mmin -180 \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.bmp' \) | while read -r FILE; do
+    BASENAME=$(basename "$FILE")
+    FILENAME="${BASENAME%.*}"
+
+    # Convert original image to webp
+    convert "$FILE" -quality 80 "$OUTPUT_DIR/${FILENAME}_original.webp"
+
+    # Create thumbnail (100x100) and convert to webp
+    convert "$FILE" -resize 100x100^ -gravity center -extent 100x100 -quality 80 "$OUTPUT_DIR/${FILENAME}_thumb.webp"
+
+    # Create medium thumbnail (300x300) and convert to webp
+    convert "$FILE" -resize 300x300^ -gravity center -extent 300x300 -quality 80 "$OUTPUT_DIR/${FILENAME}_medium_thumb.webp"
+done
